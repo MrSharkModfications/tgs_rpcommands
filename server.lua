@@ -162,6 +162,116 @@ end
 
 function tablelength(T)
 	local count = 0
-	for _ in pairs(T) do count = count + 1 end
+	for _ in pairs(T) do count = count + 1 end 
+
+
+
+---- LEO Commands ----
+
+local handcuffedPlayers = {}
+
+RegisterNetEvent("leo:toggleHandcuff")
+AddEventHandler("leo:toggleHandcuff", function(targetPlayer)
+    local officer = source
+    local targetPlayer = tonumber(targetPlayer) or 0
+
+    if targetPlayer > 0 then
+        if handcuffedPlayers[targetPlayer] then
+            -- Player is currently handcuffed, toggle off
+            handcuffedPlayers[targetPlayer] = nil
+            TriggerClientEvent("leo:handcuffStatus", targetPlayer, false)
+            TriggerClientEvent("chatMessage", -1, "LEO", {0, 255, 0}, "Player " .. GetPlayerName(targetPlayer) .. " has been uncuffed.")
+        else
+            -- Player is not handcuffed, toggle on
+            handcuffedPlayers[targetPlayer] = true
+            TriggerClientEvent("leo:handcuffStatus", targetPlayer, true)
+            TriggerClientEvent("chatMessage", -1, "LEO", {0, 255, 0}, "Player " .. GetPlayerName(targetPlayer) .. " has been handcuffed.")
+        end
+    else
+        -- Notify the officer that the command format is incorrect
+        TriggerClientEvent("chatMessage", officer, "^1Error", {255, 0, 0}, "Usage: /cuff [player id]")
+    end
+end)
+
+
+
+-- Define a table to store dragging status
+local draggingPlayers = {}
+
+RegisterNetEvent("leo:dragPlayer")
+AddEventHandler("leo:dragPlayer", function(targetPlayer)
+    local officer = source
+    local targetPlayer = tonumber(targetPlayer) or 0
+
+    if targetPlayer > 0 and handcuffedPlayers[targetPlayer] then
+        if draggingPlayers[targetPlayer] then
+            -- Player is currently being dragged, stop dragging
+            draggingPlayers[targetPlayer] = nil
+            TriggerClientEvent("leo:dragStatus", targetPlayer, false)
+            TriggerClientEvent("chatMessage", -1, "LEO", {0, 255, 0}, "Officer " .. GetPlayerName(officer) .. " has stopped dragging player " .. GetPlayerName(targetPlayer) .. ".")
+        else
+            -- Player is not being dragged, start dragging
+            draggingPlayers[targetPlayer] = officer
+            TriggerClientEvent("leo:dragStatus", targetPlayer, true)
+            TriggerClientEvent("chatMessage", -1, "LEO", {0, 255, 0}, "Officer " .. GetPlayerName(officer) .. " is dragging player " .. GetPlayerName(targetPlayer) .. ".")
+        end
+    else
+        -- Notify the officer that the command format is incorrect or the player is not cuffed
+        TriggerClientEvent("chatMessage", officer, "^1Error", {255, 0, 0}, "Usage: /drag [player id] (Player must be handcuffed)")
+    end
+end)
+
+
+RegisterNetEvent("leo:putInVehicle")
+AddEventHandler("leo:putInVehicle", function(targetPlayer)
+    local officer = source
+    local targetPlayer = tonumber(targetPlayer) or 0
+
+    if targetPlayer > 0 and handcuffedPlayers[targetPlayer] then
+        local playerPed = GetPlayerPed(targetPlayer)
+        local vehicle = GetVehiclePedIsIn(playerPed, false)
+
+        if DoesEntityExist(vehicle) and IsVehicleSeatFree(vehicle, -1) then
+            TaskWarpPedIntoVehicle(playerPed, vehicle, -1)
+            TriggerClientEvent("chatMessage", -1, "LEO", {0, 255, 0}, "Officer " .. GetPlayerName(officer) .. " has put player " .. GetPlayerName(targetPlayer) .. " into a vehicle.")
+        else
+            -- Notify the officer that the player is not in a vehicle or the vehicle is full
+            TriggerClientEvent("chatMessage", officer, "^1Error", {255, 0, 0}, "Player must be inside an empty vehicle.")
+        end
+    else
+        -- Notify the officer that the command format is incorrect or the player is not cuffed
+        TriggerClientEvent("chatMessage", officer, "^1Error", {255, 0, 0}, "Usage: /putinvehicle [player id] (Player must be handcuffed)")
+    end
+end)
+
+-- Add your existing code here
+
+RegisterNetEvent("leo:removeFromVehicle")
+AddEventHandler("leo:removeFromVehicle", function(targetPlayer)
+    local officer = source
+    local targetPlayer = tonumber(targetPlayer) or 0
+
+    if targetPlayer > 0 and handcuffedPlayers[targetPlayer] then
+        local playerPed = GetPlayerPed(targetPlayer)
+        local vehicle = GetVehiclePedIsIn(playerPed, false)
+
+        if DoesEntityExist(vehicle) then
+            TaskLeaveVehicle(playerPed, vehicle, 0)
+            local x, y, z = table.unpack(GetEntityCoords(playerPed, false))
+            SetEntityCoordsNoOffset(playerPed, x, y, z + 1.0, true, true, true)
+            TriggerClientEvent("chatMessage", -1, "LEO", {0, 255, 0}, "Officer " .. GetPlayerName(officer) .. " has removed player " .. GetPlayerName(targetPlayer) .. " from a vehicle.")
+        else
+            -- Notify the officer that the player is not in a vehicle
+            TriggerClientEvent("chatMessage", officer, "^1Error", {255, 0, 0}, "Player must be inside a vehicle.")
+        end
+    else
+        -- Notify the officer that the command format is incorrect or the player is not cuffed
+        TriggerClientEvent("chatMessage", officer, "^1Error", {255, 0, 0}, "Usage: /removefromvehicle [player id] (Player must be handcuffed)")
+    end
+end)
+
+end)
+
+
 	return count
 end
