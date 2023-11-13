@@ -1,7 +1,7 @@
 # ftm_rpcommands 
 # 
 # Mr Sharks Modifications 
-Made By Fivem Top Mods© 2023 Join Our Official Discord for support:https://discord.gg/UDJsUmZe 
+Made By Mr Sharks Modifications Join Our Official Discord for support:https://discord.gg/UDJsUmZe 
 
 suggestions
 make sure to suggest anything to our discord we have a forum especially for them so please do suggest anything you would like to see added!
