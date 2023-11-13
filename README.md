@@ -1,10 +1,10 @@
 # ftm_rpcommands 
 # 
-# Fivem Top Mods 
-Made By Fivem Top Mods© 2023 Join Our Official Discord for support: https://discord.gg/XNdJ32m5g3 Thankyou for choosing Fivem Top Mods!
+# Mr Sharks Modifications 
+Made By Fivem Top Mods© 2023 Join Our Official Discord for support:https://discord.gg/UDJsUmZe 
 
 suggestions
-make sure to suggest anything to our discord we have a forum esspecially for them so please do suggest anything you would like to see added!
+make sure to suggest anything to our discord we have a forum especially for them so please do suggest anything you would like to see added!
 
 This is an advanced chat command package with various different commands!
 
